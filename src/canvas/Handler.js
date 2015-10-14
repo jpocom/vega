@@ -14,15 +14,19 @@ vg.canvas.Handler = (function() {
     this._canvas = d3.select(el).select("canvas.marks").node();
     this._padding = pad;
     this._obj = obj || null;
-    
-    // add event listeners
-    var canvas = this._canvas, that = this;
-    events.forEach(function(type) {
-      canvas.addEventListener(type, function(evt) {
-        prototype[type].call(that, evt);
+
+    if (vg.config.isNode) {
+      this._canvas = obj.canvas();
+    } else {
+      // add event listeners
+      var canvas = this._canvas, that = this;
+      events.forEach(function (type) {
+        canvas.addEventListener(type, function (evt) {
+          prototype[type].call(that, evt);
+        });
       });
-    });
-    
+    }
+
     return this;
   };
   

@@ -435,13 +435,36 @@ vg.canvas.marks = (function() {
       g.translate(dx, dy);
       for (j=group.items.length; --j >= 0;) {
         subscene = group.items[j];
-        if (subscene.interactive === false) continue;
+        //if (subscene.interactive === false) continue;
         hit = handler.pick(subscene, x, y, gx-dx, gy-dy);
         if (hit) {
           g.restore();
           return hit;
         }
       }
+
+      if (group.axisItems) {
+        for (j = group.axisItems.length; --j >= 0;) {
+          subscene = group.axisItems[j];
+          hit = handler.pick(subscene, x, y, gx-dx, gy-dy);
+          if (hit) {
+            g.restore();
+            return hit;
+          }
+        }
+      }
+
+      if (group.legendItems) {
+        for (j = group.legendItems.length; --j >= 0;) {
+          subscene = group.legendItems[j];
+          hit = handler.pick(subscene, x, y, gx-dx, gy-dy);
+          if (hit) {
+            g.restore();
+            return hit;
+          }
+        }
+      }
+
       g.restore();
     }
 
@@ -454,7 +477,7 @@ vg.canvas.marks = (function() {
     if (!scene.items.length) return false;
     var o, b, i;
 
-    if (g._ratio !== 1) {
+    if (g._ratio && g._ratio !== 1) {
       x *= g._ratio;
       y *= g._ratio;
     }
@@ -506,7 +529,7 @@ vg.canvas.marks = (function() {
   }
 
   function textHit(g, o, x, y, gx, gy) {
-    if (!o.fontSize) return false;
+    if (o.fontSize <= 0) return false;
     if (!o.angle) return true; // bounds sufficient if no rotation
 
     var b = vg.scene.bounds.text(o, tmpBounds, true),
